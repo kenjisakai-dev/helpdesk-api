@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { usersRoutes } from "@/routes/users-routes";
+import { sessionsRoutes } from "@/routes/sessions-routes";
 
 const routes = Router();
 
@@ -8,5 +9,6 @@ routes.get("/ping", (req, res) => {
 });
 
 routes.use("/users", usersRoutes);
+routes.use("/sessions", sessionsRoutes);
 
 export { routes };
