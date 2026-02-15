@@ -1,0 +1,9 @@
+{
+  "name": "helpdesk-api",
+  "version": "1.0.0",
+  "description": "API responsável por gerenciar os chamados do sistema de helpdesk",
+  "main": "index.js",
+  "scripts": {},
+  "author": "Kenji",
+  "license": "ISC"
+}
