@@ -7,8 +7,8 @@ export class SessionsController {
 
   create = async (req: Request, res: Response) => {
     const bodySchema = z.object({
-      email: z.string("Email é obrigatório").toLowerCase(),
-      password: z.string("Senha é obrigatória"),
+      email: z.email("E-mail inválido").toLowerCase(),
+      password: z.string().trim().min(1, "Informe a senha"),
     });
 
     const { email, password } = bodySchema.parse(req.body);
