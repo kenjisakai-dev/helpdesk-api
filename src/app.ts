@@ -1,10 +1,10 @@
 import express from "express";
+import { routes } from "@/routes/index";
+import { errorHandling } from "@/middlewares/error-handling";
 
 const app = express();
 app.use(express.json());
-
-app.get("/ping", (req, res) => {
-  return res.json({ message: "pong", now: new Date() });
-});
+app.use(routes);
+app.use(errorHandling);
 
 export { app };

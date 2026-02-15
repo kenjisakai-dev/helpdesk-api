@@ -9,6 +9,7 @@
   "author": "Kenji",
   "license": "ISC",
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
     "@types/node": "^25.2.3",
     "@types/pg": "^8.16.0",
@@ -19,8 +20,10 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.4.0",
     "@prisma/client": "^7.4.0",
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
-    "pg": "^8.18.0"
+    "pg": "^8.18.0",
+    "zod": "^4.3.6"
   }
 }
