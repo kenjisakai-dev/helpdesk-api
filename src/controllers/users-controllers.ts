@@ -7,10 +7,11 @@ export class UserController {
 
   create = async (req: Request, res: Response) => {
     const bodySchema = z.object({
-      name: z.string("Nome é obrigatório").trim().min(1, "Nome é obrigatório"),
+      name: z.string().trim().min(1, "Nome é obrigatório"),
       email: z.email("Email inválido").trim().toLowerCase(),
       password: z
         .string("Senha é obrigatória")
+        .trim()
         .min(6, "A senha deve conter no mínimo 6 caracteres"),
     });
 
