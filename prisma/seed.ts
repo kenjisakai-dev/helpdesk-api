@@ -8,13 +8,13 @@ async function seed() {
       client: {
         name: "João Pereira",
         email: "joao@email.com",
-        password: await hashPassword("123456"),
+        password: "123456",
         role: "client",
       },
       technical: {
         name: "Carlos Silva",
         email: "carlos@email.com",
-        password: await hashPassword("123456"),
+        password: "123456",
         role: "technical",
       },
       service: [
@@ -33,13 +33,13 @@ async function seed() {
       client: {
         name: "João Pereira",
         email: "joao@email.com",
-        password: await hashPassword("123456"),
+        password: "123456",
         role: "client",
       },
       technical: {
         name: "Carlos Silva",
         email: "carlos@email.com",
-        password: await hashPassword("123456"),
+        password: "123456",
         role: "technical",
       },
       service: [
@@ -58,13 +58,13 @@ async function seed() {
       client: {
         name: "João Pereira",
         email: "joao@email.com",
-        password: await hashPassword("123456"),
+        password: "123456",
         role: "client",
       },
       technical: {
         name: "Carlos Silva",
         email: "carlos@email.com",
-        password: await hashPassword("123456"),
+        password: "123456",
         role: "technical",
       },
       service: [
@@ -83,13 +83,13 @@ async function seed() {
       client: {
         name: "João Pereira",
         email: "joao@email.com",
-        password: await hashPassword("123456"),
+        password: "123456",
         role: "client",
       },
       technical: {
         name: "Ana Oliveira",
         email: "ana@email.com",
-        password: await hashPassword("123456"),
+        password: "123456",
         role: "technical",
       },
       service: [
@@ -113,13 +113,13 @@ async function seed() {
       client: {
         name: "João Pereira",
         email: "joao@email.com",
-        password: await hashPassword("123456"),
+        password: "123456",
         role: "client",
       },
       technical: {
         name: "Ana Oliveira",
         email: "ana@email.com",
-        password: await hashPassword("123456"),
+        password: "123456",
         role: "technical",
       },
       service: [

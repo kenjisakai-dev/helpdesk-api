@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { usersRoutes } from "@/routes/users-routes";
 import { sessionsRoutes } from "@/routes/sessions-routes";
-import { tasksRouter } from "@/routes/tasks-routes";
+import { ticketsRouter } from "@/routes/tickets-routes";
 import { ensureAuthenticated } from "@/middlewares/ensure-authenticated";
 
 const routes = Router();
@@ -14,6 +14,6 @@ routes.use("/users", usersRoutes);
 routes.use("/sessions", sessionsRoutes);
 
 routes.use(ensureAuthenticated);
-routes.use("/tickets", tasksRouter);
+routes.use("/tickets", ticketsRouter);
 
 export { routes };
