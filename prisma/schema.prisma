@@ -13,14 +13,74 @@ enum UserRole {
 }
 
 model User {
-  id    String     @id @default(uuid())
-  name  String
-  email String  @unique
+  id       Int      @id @default(autoincrement())
+  name     String
+  email    String   @unique
   password String
-  role UserRole @default(client)
+  role     UserRole @default(client)
+
+  clientTickets    Ticket[] @relation("ClientTickets")
+  technicalTickets Ticket[] @relation("TechnicalTickets")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("users")
+}
+
+enum TicketStatus {
+  opened
+  in_progress
+  closed
+}
+
+model Ticket {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String
+  status      TicketStatus @default(opened)
+
+  clientId Int  @map("client_id")
+  client   User @relation("ClientTickets", fields: [clientId], references: [id])
+
+  technicalId Int  @map("technical_id")
+  technical   User @relation("TechnicalTickets", fields: [technicalId], references: [id])
+
+  TicketService TicketService[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("tickets")
+}
+
+model Service {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  amount      Float
+  status      Boolean      @default(true)
+
+  TicketService TicketService[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("services")
+}
+
+model TicketService {
+  id        Int     @id @default(autoincrement())
+
+  ticketId  Int     @map("ticket_id")
+  ticket   Ticket  @relation(fields: [ticketId], references: [id])
+
+  serviceId Int     @map("service_id")
+  service  Service @relation(fields: [serviceId], references: [id])
+
+  amount    Float
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("ticket_services")
 }
