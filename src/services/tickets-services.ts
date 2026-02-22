@@ -119,6 +119,17 @@ export class TicketService {
       return secondTicket.updatedAt.getTime() - firstTicket.updatedAt.getTime();
     });
 
+    const ticketsWithTotalAmount = sortedTickets.map((ticket) => {
+      const total = ticket.TicketService.reduce((total, item) => {
+        return total + item.amount;
+      }, 0);
+
+      return {
+        ...ticket,
+        total,
+      };
+    });
+
     const ticketsTotal = await prisma.ticket.count({
       where: {
         clientId: client_id,
@@ -129,7 +140,7 @@ export class TicketService {
     const totalTickets = ticketsTotal;
 
     return {
-      tickets: sortedTickets,
+      tickets: ticketsWithTotalAmount,
       pagination: { page, limit, totalPages, totalTickets },
     };
   }
