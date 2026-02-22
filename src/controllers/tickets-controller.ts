@@ -51,4 +51,18 @@ export class TicketController {
 
     return res.json(tickets);
   };
+
+  show = async (req: Request, res: Response) => {
+    const bodySchema = z.object({
+      id: z.coerce
+        .number("O ID do ticket é obrigatório")
+        .int("O ID do ticket deve ser um número inteiro"),
+    });
+
+    const { id } = bodySchema.parse(req.params);
+
+    const tickets = await this.ticketService.show({ id });
+
+    return res.json(tickets);
+  };
 }

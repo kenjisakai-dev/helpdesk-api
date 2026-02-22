@@ -8,5 +8,6 @@ const ticketController = new TicketController(ticketService);
 
 ticketsRouter.post("/", ticketController.create);
 ticketsRouter.get("/", ticketController.index);
+ticketsRouter.get("/:id", ticketController.show);
 
 export { ticketsRouter };

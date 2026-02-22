@@ -144,4 +144,50 @@ export class TicketService {
       pagination: { page, limit, totalPages, totalTickets },
     };
   }
+
+  async show({ id }: { id: number }) {
+    const ticket = await prisma.ticket.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        client: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            password: false,
+            role: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        technical: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            password: false,
+            role: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        TicketService: {
+          include: {
+            service: true,
+          },
+        },
+      },
+    });
+
+    const totalAmount = ticket?.TicketService.reduce((total, service) => {
+      return total + service.amount;
+    }, 0);
+
+    return {
+      ...ticket,
+      total: totalAmount,
+    };
+  }
 }
