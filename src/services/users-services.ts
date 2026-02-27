@@ -1,5 +1,6 @@
 import { hash } from "bcrypt";
 import { prisma } from "@/database/prisma";
+import { AppError } from "@/utils/app-error";
 
 type User = {
   name: string;
@@ -25,6 +26,21 @@ export class UserService {
         email,
         password: hashedPassword,
       },
+    });
+  }
+
+  async delete(user_id: number) {
+    const userExists = await prisma.user.count({
+      where: { id: user_id, status: true },
+    });
+
+    if (userExists === 0) {
+      throw new AppError("Usuário não encontrado");
+    }
+
+    await prisma.user.update({
+      where: { id: user_id },
+      data: { status: false },
     });
   }
 }
