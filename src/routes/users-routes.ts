@@ -8,6 +8,12 @@ const userService = new UserService();
 const userController = new UserController(userService);
 
 usersRoutes.post("/", userController.create);
-usersRoutes.patch("/", ensureAuthenticated, userController.delete);
+usersRoutes.patch("/", ensureAuthenticated, userController.update);
+usersRoutes.patch(
+  "/changePassword",
+  ensureAuthenticated,
+  userController.changePassword,
+);
+usersRoutes.delete("/", ensureAuthenticated, userController.delete);
 
 export { usersRoutes };

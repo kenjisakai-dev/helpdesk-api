@@ -1,4 +1,4 @@
-import { hash } from "bcrypt";
+import { hash, compare } from "bcrypt";
 import { prisma } from "@/database/prisma";
 import { AppError } from "@/utils/app-error";
 
@@ -6,6 +6,18 @@ type User = {
   name: string;
   email: string;
   password: string;
+};
+
+type UpdateUser = {
+  user_id: number;
+  name?: string;
+  email?: string;
+};
+
+type ChangePasswordUser = {
+  user_id: number;
+  currentPassword: string;
+  newPassword: string;
 };
 
 export class UserService {
@@ -29,18 +41,70 @@ export class UserService {
     });
   }
 
-  async delete(user_id: number) {
-    const userExists = await prisma.user.count({
+  async update({ user_id, name, email }: UpdateUser) {
+    const userExists = await prisma.user.findUnique({
       where: { id: user_id, status: true },
     });
 
-    if (userExists === 0) {
-      throw new AppError("Usuário não encontrado");
+    if (!userExists) {
+      throw new AppError("Usuário não encontrado", 404);
+    }
+
+    if (email) {
+      const userByEmailExists = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (userByEmailExists) {
+        throw new AppError("Email já existente");
+      }
+    }
+
+    await prisma.user.update({
+      where: { id: user_id },
+      data: { name, email },
+    });
+  }
+
+  async delete(user_id: number) {
+    const userExists = await prisma.user.findUnique({
+      where: { id: user_id, status: true },
+    });
+
+    if (!userExists) {
+      throw new AppError("Usuário não encontrado", 404);
     }
 
     await prisma.user.update({
       where: { id: user_id },
       data: { status: false },
+    });
+  }
+
+  async changePassword({
+    user_id,
+    currentPassword,
+    newPassword,
+  }: ChangePasswordUser) {
+    const userExists = await prisma.user.findUnique({
+      where: { id: user_id, status: true },
+    });
+
+    if (!userExists) {
+      throw new AppError("Usuário não encontrado", 404);
+    }
+
+    const comparePassword = await compare(currentPassword, userExists.password);
+
+    if (!comparePassword) {
+      throw new AppError("Senha atual incorreta");
+    }
+
+    const hashedPassword = await hash(newPassword, 8);
+
+    await prisma.user.update({
+      where: { id: user_id },
+      data: { password: hashedPassword },
     });
   }
 }
