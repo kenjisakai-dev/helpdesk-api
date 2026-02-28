@@ -22,6 +22,7 @@ model User {
 
   clientTickets    Ticket[] @relation("ClientTickets")
   technicalTickets Ticket[] @relation("TechnicalTickets")
+  userProfile UserProfile?
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -47,7 +48,7 @@ model Ticket {
   technicalId Int  @map("technical_id")
   technical   User @relation("TechnicalTickets", fields: [technicalId], references: [id])
 
-  TicketService TicketService[]
+  ticketServices TicketService[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -61,7 +62,7 @@ model Service {
   amount      Float
   status      Boolean      @default(true)
 
-  TicketService TicketService[]
+  ticketServices TicketService[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -84,4 +85,16 @@ model TicketService {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("ticket_services")
+}
+
+model UserProfile {
+  id        Int     @id @default(autoincrement())
+  filename  String
+  userId    Int     @unique @map("user_id")
+  user      User    @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("user_profiles")
 }
