@@ -14,4 +14,12 @@ export class UploadController {
 
     return res.status(201).json({ filename });
   };
+
+  delete = async (req: Request, res: Response) => {
+    const user_id = req.user.user_id;
+
+    await this.uploadService.delete({ user_id });
+
+    return res.json();
+  };
 }

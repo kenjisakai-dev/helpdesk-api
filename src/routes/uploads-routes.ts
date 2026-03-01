@@ -13,5 +13,6 @@ const uploadsController = new UploadController(uploadsService);
 const upload = multer(uploadConfig.MULTER);
 
 uploadsRoutes.post("/", upload.single("profile"), uploadsController.create);
+uploadsRoutes.delete("/", uploadsController.delete);
 
 export { uploadsRoutes };

@@ -64,4 +64,18 @@ export class UploadService {
       throw err;
     }
   };
+
+  delete = async ({ user_id }: { user_id: number }) => {
+    const userProfile = await prisma.userProfile.findUnique({
+      where: { userId: user_id },
+    });
+
+    if (!userProfile) return;
+
+    await prisma.userProfile.delete({
+      where: { userId: user_id },
+    });
+
+    await this.diskStorage.deleteFile(userProfile.filename, "uploads");
+  };
 }
