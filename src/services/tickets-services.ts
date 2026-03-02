@@ -98,28 +98,10 @@ export class TicketService {
           },
         },
       },
+      orderBy: [{ status: "asc" }, { updatedAt: "desc" }],
     });
 
-    const statusOrder: Record<string, number> = {
-      opened: 0,
-      in_progress: 1,
-      closed: 2,
-    };
-
-    const sortedTickets = tickets.sort((firstTicket, secondTicket) => {
-      const firstTicketStatusOrder =
-        statusOrder[firstTicket.status] ?? Number.MAX_SAFE_INTEGER;
-      const secondTicketStatusOrder =
-        statusOrder[secondTicket.status] ?? Number.MAX_SAFE_INTEGER;
-
-      if (firstTicketStatusOrder !== secondTicketStatusOrder) {
-        return firstTicketStatusOrder - secondTicketStatusOrder;
-      }
-
-      return secondTicket.updatedAt.getTime() - firstTicket.updatedAt.getTime();
-    });
-
-    const ticketsWithTotalAmount = sortedTickets.map((ticket) => {
+    const ticketsWithTotalAmount = tickets.map((ticket) => {
       const total = ticket.ticketServices.reduce((total, item) => {
         return total + item.amount;
       }, 0);
