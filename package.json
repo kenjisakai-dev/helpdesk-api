@@ -2,9 +2,11 @@
   "name": "helpdesk-api",
   "version": "1.0.0",
   "description": "API responsável por gerenciar os chamados do sistema de helpdesk",
-  "main": "index.js",
+  "main": "build/server.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts"
+    "dev": "tsx watch src/server.ts",
+    "build": "tsup",
+    "start": "node ./build/server.js"
   },
   "author": "Kenji",
   "license": "ISC",
