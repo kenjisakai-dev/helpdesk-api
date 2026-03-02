@@ -136,66 +136,72 @@ async function seed() {
     },
   ];
 
-  await prisma.$transaction(async (tx) => {
-    for (const ticket of tickets) {
-      const client = await tx.user.upsert({
-        where: { email: ticket.client.email },
-        update: {},
-        create: {
-          name: ticket.client.name,
-          email: ticket.client.email,
-          password: await hashPassword(ticket.client.password),
-          role: "client" as UserRole,
-        },
-      });
-
-      const technical = await tx.user.upsert({
-        where: { email: ticket.technical.email },
-        update: {},
-        create: {
-          name: ticket.technical.name,
-          email: ticket.technical.email,
-          password: await hashPassword(ticket.technical.password),
-          role: "technical" as UserRole,
-        },
-      });
-
-      const services = [];
-
-      for (const service of ticket.service) {
-        const serviceUpsert = await tx.service.upsert({
-          where: { name: service.name },
+  await prisma.$transaction(
+    async (tx) => {
+      for (const ticket of tickets) {
+        const client = await tx.user.upsert({
+          where: { email: ticket.client.email },
           update: {},
           create: {
-            name: service.name,
-            amount: service.amount,
+            name: ticket.client.name,
+            email: ticket.client.email,
+            password: await hashPassword(ticket.client.password),
+            role: "client" as UserRole,
           },
         });
 
-        services.push(serviceUpsert);
-      }
+        const technical = await tx.user.upsert({
+          where: { email: ticket.technical.email },
+          update: {},
+          create: {
+            name: ticket.technical.name,
+            email: ticket.technical.email,
+            password: await hashPassword(ticket.technical.password),
+            role: "technical" as UserRole,
+          },
+        });
 
-      const createdTicket = await tx.ticket.create({
-        data: {
-          title: ticket.ticket.title,
-          description: ticket.ticket.description,
-          status: ticket.ticket.status as TicketStatus,
-          clientId: client.id,
-          technicalId: technical.id,
-        },
-      });
+        const services = [];
 
-      for (const service of services) {
-        await tx.ticketService.create({
+        for (const service of ticket.service) {
+          const serviceUpsert = await tx.service.upsert({
+            where: { name: service.name },
+            update: {},
+            create: {
+              name: service.name,
+              amount: service.amount,
+            },
+          });
+
+          services.push(serviceUpsert);
+        }
+
+        const createdTicket = await tx.ticket.create({
           data: {
-            ticketId: createdTicket.id,
-            serviceId: service.id,
-            amount: service.amount,
+            title: ticket.ticket.title,
+            description: ticket.ticket.description,
+            status: ticket.ticket.status as TicketStatus,
+            clientId: client.id,
+            technicalId: technical.id,
           },
         });
+
+        for (const service of services) {
+          await tx.ticketService.create({
+            data: {
+              ticketId: createdTicket.id,
+              serviceId: service.id,
+              amount: service.amount,
+            },
+          });
+        }
       }
-    }
-  });
+    },
+    {
+      maxWait: 10000,
+      timeout: 60000,
+    },
+  );
 
   // await prisma.user.createMany({
   //   data: [

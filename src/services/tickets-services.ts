@@ -92,7 +92,7 @@ export class TicketService {
             updatedAt: true,
           },
         },
-        TicketService: {
+        ticketServices: {
           include: {
             service: true,
           },
@@ -120,7 +120,7 @@ export class TicketService {
     });
 
     const ticketsWithTotalAmount = sortedTickets.map((ticket) => {
-      const total = ticket.TicketService.reduce((total, item) => {
+      const total = ticket.ticketServices.reduce((total, item) => {
         return total + item.amount;
       }, 0);
 
@@ -173,7 +173,7 @@ export class TicketService {
             updatedAt: true,
           },
         },
-        TicketService: {
+        ticketServices: {
           include: {
             service: true,
           },
@@ -181,7 +181,7 @@ export class TicketService {
       },
     });
 
-    const totalAmount = ticket?.TicketService.reduce((total, service) => {
+    const totalAmount = ticket?.ticketServices.reduce((total, service) => {
       return total + service.amount;
     }, 0);
 
