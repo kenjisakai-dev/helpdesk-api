@@ -41,10 +41,10 @@ export class TicketController {
     });
 
     const { page, limit } = bodySchema.parse(req.query);
-    const client_id = req.user?.user_id;
+    const user_id = req.user?.user_id;
 
     const tickets = await this.ticketService.index({
-      client_id,
+      user_id,
       page,
       limit,
     });

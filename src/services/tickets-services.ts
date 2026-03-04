@@ -1,5 +1,6 @@
 import { prisma } from "@/database/prisma";
 import { AppError } from "@/utils/app-error";
+import { Prisma } from "@prisma/client";
 
 type TicketCreateDTO = {
   title: string;
@@ -9,7 +10,7 @@ type TicketCreateDTO = {
 };
 
 type TicketIndexDTO = {
-  client_id?: number;
+  user_id?: number;
   page?: number;
   limit?: number;
 };
@@ -60,15 +61,35 @@ export class TicketService {
     });
   }
 
-  async index({ client_id, page = 1, limit = 5 }: TicketIndexDTO) {
+  async index({ user_id, page = 1, limit = 5 }: TicketIndexDTO) {
     const skip = (page - 1) * limit;
+
+    let filter: Prisma.TicketWhereInput = {};
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: user_id,
+      },
+    });
+
+    if (!user) {
+      throw new AppError("Usuário não encontrado", 404);
+    }
+
+    if (user?.role === "technical") {
+      filter = {
+        technicalId: user.id,
+      };
+    } else {
+      filter = {
+        clientId: user.id,
+      };
+    }
 
     const tickets = await prisma.ticket.findMany({
       skip,
       take: limit,
-      where: {
-        clientId: client_id,
-      },
+      where: filter,
       include: {
         client: {
           select: {
@@ -113,9 +134,7 @@ export class TicketService {
     });
 
     const ticketsTotal = await prisma.ticket.count({
-      where: {
-        clientId: client_id,
-      },
+      where: filter,
     });
 
     const totalPages = Math.ceil(ticketsTotal / limit);
