@@ -1,6 +1,6 @@
 import { prisma } from "@/database/prisma";
 import { AppError } from "@/utils/app-error";
-import { Prisma } from "@prisma/client";
+import { Prisma, TicketStatus } from "@prisma/client";
 
 type TicketCreateDTO = {
   title: string;
@@ -13,6 +13,21 @@ type TicketIndexDTO = {
   user_id?: number;
   page?: number;
   limit?: number;
+};
+
+type TicketUpdateDTO = {
+  ticket_id: number;
+  status: TicketStatus;
+};
+
+type TicketServiceCreateDTO = {
+  ticket_id: number;
+  service_id: number;
+};
+
+type TicketServiceDeleteDTO = {
+  ticket_id: number;
+  ticket_service_id: number;
 };
 
 export class TicketService {
@@ -190,5 +205,96 @@ export class TicketService {
       ...ticket,
       total: totalAmount,
     };
+  }
+
+  async update({ ticket_id, status }: TicketUpdateDTO) {
+    const ticket = await prisma.ticket.findUnique({
+      where: {
+        id: ticket_id,
+      },
+    });
+
+    if (!ticket) {
+      throw new AppError("Ticket não encontrado", 404);
+    }
+
+    await prisma.ticket.update({
+      where: {
+        id: ticket_id,
+      },
+      data: {
+        status,
+      },
+    });
+  }
+
+  async createTicketService({ ticket_id, service_id }: TicketServiceCreateDTO) {
+    const ticket = await prisma.ticket.findUnique({
+      where: {
+        id: ticket_id,
+      },
+    });
+
+    if (!ticket) {
+      throw new AppError("Ticket não encontrado", 404);
+    }
+
+    const service = await prisma.service.findUnique({
+      where: {
+        id: service_id,
+      },
+    });
+
+    if (!service) {
+      throw new AppError("Serviço não encontrado", 404);
+    }
+
+    await prisma.ticketService.create({
+      data: {
+        ticketId: ticket_id,
+        serviceId: service_id,
+        amount: service.amount,
+      },
+    });
+  }
+
+  async deleteTicketService({
+    ticket_id,
+    ticket_service_id,
+  }: TicketServiceDeleteDTO) {
+    const ticket = await prisma.ticket.findUnique({
+      where: {
+        id: ticket_id,
+      },
+      include: {
+        ticketServices: {
+          orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+        },
+      },
+    });
+
+    if (!ticket) {
+      throw new AppError("Ticket não encontrado", 404);
+    }
+
+    const ticketServiceBase = ticket.ticketServices[0] ?? null;
+
+    if (ticketServiceBase?.id === ticket_service_id) {
+      throw new AppError("O serviço base do ticket não pode ser deletado", 400);
+    }
+
+    const ticketServiceExclude = ticket.ticketServices.find(
+      (ts) => ts.id === ticket_service_id,
+    );
+
+    if (!ticketServiceExclude) {
+      throw new AppError("Serviço do ticket não encontrado", 404);
+    }
+
+    await prisma.ticketService.delete({
+      where: {
+        id: ticket_service_id,
+      },
+    });
   }
 }

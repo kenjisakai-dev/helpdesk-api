@@ -81,7 +81,7 @@ enum UserRole {
 }
 
 enum TicketStatus {
-  opened
   in_progress
+  opened
   closed
 }
