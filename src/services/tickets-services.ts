@@ -277,6 +277,13 @@ export class TicketService {
       throw new AppError("Ticket não encontrado", 404);
     }
 
+    if (ticket.status === "closed") {
+      throw new AppError(
+        "Não é possível excluir serviços de um ticket fechado",
+        400,
+      );
+    }
+
     const ticketServiceBase = ticket.ticketServices[0] ?? null;
 
     if (ticketServiceBase?.id === ticket_service_id) {
