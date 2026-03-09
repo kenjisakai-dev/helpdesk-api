@@ -91,7 +91,9 @@ export class TicketService {
       throw new AppError("Usuário não encontrado", 404);
     }
 
-    if (user?.role === "technical") {
+    if (user?.role === "admin") {
+      filter = {};
+    } else if (user?.role === "technical") {
       filter = {
         technicalId: user.id,
       };
