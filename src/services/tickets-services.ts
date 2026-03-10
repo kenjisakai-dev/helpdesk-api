@@ -11,8 +11,8 @@ type TicketCreateDTO = {
 
 type TicketIndexDTO = {
   user_id?: number;
-  page?: number;
-  limit?: number;
+  page: number;
+  limit: number;
 };
 
 type TicketUpdateDTO = {
@@ -76,7 +76,7 @@ export class TicketService {
     });
   }
 
-  async index({ user_id, page = 1, limit = 5 }: TicketIndexDTO) {
+  async index({ user_id, page, limit }: TicketIndexDTO) {
     const skip = (page - 1) * limit;
 
     let filter: Prisma.TicketWhereInput = {};

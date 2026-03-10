@@ -20,6 +20,11 @@ type ChangePasswordUser = {
   newPassword: string;
 };
 
+type TechnicalIndexDTO = {
+  page: number;
+  limit: number;
+};
+
 export class UserService {
   async create({ name, email, password }: User) {
     const user = await prisma.user.findUnique({
@@ -106,5 +111,38 @@ export class UserService {
       where: { id: user_id },
       data: { password: hashedPassword },
     });
+  }
+
+  async indexTechnicals({ page, limit }: TechnicalIndexDTO) {
+    const skip = (page - 1) * limit;
+
+    const technicals = await prisma.user.findMany({
+      skip,
+      take: limit,
+      where: { role: "technical", status: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: false,
+        role: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: { name: "asc" },
+    });
+
+    const ticketsTechnicals = await prisma.user.count({
+      where: { role: "technical", status: true },
+    });
+
+    const totalPages = Math.ceil(ticketsTechnicals / limit);
+    const totalItems = ticketsTechnicals;
+
+    return {
+      data: technicals,
+      pagination: { page, limit, totalPages, totalItems },
+    };
   }
 }

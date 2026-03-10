@@ -64,4 +64,26 @@ export class UserController {
 
     return res.json();
   };
+
+  indexTechnicals = async (req: Request, res: Response) => {
+    const bodySchema = z.object({
+      page: z.coerce
+        .number()
+        .int("A página deve ser um número inteiro")
+        .min(1, "A página mínima é 1")
+        .default(1),
+      limit: z.coerce
+        .number()
+        .int("O limite deve ser um número inteiro")
+        .min(1, "O limite mínimo é 1")
+        .max(50, "O limite máximo é 50")
+        .default(10),
+    });
+
+    const { page, limit } = bodySchema.parse(req.query);
+
+    const technicals = await this.userService.indexTechnicals({ page, limit });
+
+    return res.json(technicals);
+  };
 }
