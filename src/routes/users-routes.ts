@@ -21,5 +21,10 @@ usersRoutes.get(
   verifyAuthorized(["admin"]),
   userController.indexTechnicals,
 );
+usersRoutes.post(
+  "/technicals",
+  verifyAuthorized(["admin"]),
+  userController.createTechnical,
+);
 
 export { usersRoutes };

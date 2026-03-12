@@ -86,4 +86,29 @@ export class UserController {
 
     return res.json(technicals);
   };
+
+  createTechnical = async (req: Request, res: Response) => {
+    const bodySchema = z.object({
+      name: z.string().trim().min(1, "Nome é obrigatório"),
+      email: z.email("Email inválido").trim().toLowerCase(),
+      password: z
+        .string("Senha é obrigatória")
+        .trim()
+        .min(6, "A senha deve conter no mínimo 6 caracteres"),
+      scales_id: z
+        .array(z.number("O ID deve ser um número"))
+        .min(1, "Escolha ao menos uma escala"),
+    });
+
+    const { name, email, password, scales_id } = bodySchema.parse(req.body);
+
+    await this.userService.createTechnical({
+      name,
+      email,
+      password,
+      scales_id,
+    });
+
+    return res.status(201).json();
+  };
 }

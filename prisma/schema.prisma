@@ -18,6 +18,7 @@ model User {
   clientTickets    Ticket[]     @relation("ClientTickets")
   technicalTickets Ticket[]     @relation("TechnicalTickets")
   userProfile      UserProfile?
+  userScales       UserScale[]
 
   @@map("users")
 }
@@ -84,4 +85,27 @@ enum TicketStatus {
   in_progress
   opened
   closed
+}
+
+model Scale {
+  id        Int      @id @default(autoincrement())
+  hour      Int      @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userScales UserScale[]
+
+  @@map("scales")
+}
+
+model UserScale {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  scaleId   Int      @map("scale_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id])
+  scale     Scale    @relation(fields: [scaleId], references: [id])
+
+  @@map("user_scales")
 }

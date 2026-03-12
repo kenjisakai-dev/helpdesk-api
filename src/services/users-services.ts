@@ -25,6 +25,13 @@ type TechnicalIndexDTO = {
   limit: number;
 };
 
+type TechnicalCreateDTO = {
+  name: string;
+  email: string;
+  password: string;
+  scales_id: number[];
+};
+
 export class UserService {
   async create({ name, email, password }: User) {
     const user = await prisma.user.findUnique({
@@ -144,5 +151,49 @@ export class UserService {
       data: technicals,
       pagination: { page, limit, totalPages, totalItems },
     };
+  }
+
+  async createTechnical({
+    name,
+    email,
+    password,
+    scales_id,
+  }: TechnicalCreateDTO) {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (user) {
+      throw new Error("Email já cadastrado");
+    }
+
+    const hashedPassword = await hash(password, 8);
+
+    const userCreated = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role: "technical",
+      },
+    });
+
+    const scales = await prisma.scale.findMany({
+      where: {
+        id: {
+          in: scales_id,
+        },
+      },
+      select: { id: true },
+    });
+
+    const data = scales.map((scale) => ({
+      userId: userCreated.id,
+      scaleId: scale.id,
+    }));
+
+    await prisma.userScale.createMany({
+      data,
+    });
   }
 }

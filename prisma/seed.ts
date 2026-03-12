@@ -135,73 +135,12 @@ async function seed() {
       },
     },
   ];
+  const hours = [
+    7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+  ];
 
-  await prisma.$transaction(
-    async (tx) => {
-      for (const ticket of tickets) {
-        const client = await tx.user.upsert({
-          where: { email: ticket.client.email },
-          update: {},
-          create: {
-            name: ticket.client.name,
-            email: ticket.client.email,
-            password: await hashPassword(ticket.client.password),
-            role: "client" as UserRole,
-          },
-        });
-
-        const technical = await tx.user.upsert({
-          where: { email: ticket.technical.email },
-          update: {},
-          create: {
-            name: ticket.technical.name,
-            email: ticket.technical.email,
-            password: await hashPassword(ticket.technical.password),
-            role: "technical" as UserRole,
-          },
-        });
-
-        const services = [];
-
-        for (const service of ticket.service) {
-          const serviceUpsert = await tx.service.upsert({
-            where: { name: service.name },
-            update: {},
-            create: {
-              name: service.name,
-              amount: service.amount,
-            },
-          });
-
-          services.push(serviceUpsert);
-        }
-
-        const createdTicket = await tx.ticket.create({
-          data: {
-            title: ticket.ticket.title,
-            description: ticket.ticket.description,
-            status: ticket.ticket.status as TicketStatus,
-            clientId: client.id,
-            technicalId: technical.id,
-          },
-        });
-
-        for (const service of services) {
-          await tx.ticketService.create({
-            data: {
-              ticketId: createdTicket.id,
-              serviceId: service.id,
-              amount: service.amount,
-            },
-          });
-        }
-      }
-    },
-    {
-      maxWait: 10000,
-      timeout: 60000,
-    },
-  );
+  await createTickets(tickets);
+  await createHours(hours);
 
   // await prisma.user.createMany({
   //   data: [
@@ -298,6 +237,82 @@ async function seed() {
 
 async function hashPassword(password: string) {
   return await hash(password, 8);
+}
+
+async function createTickets(tickets: any[]) {
+  await prisma.$transaction(
+    async (tx) => {
+      for (const ticket of tickets) {
+        const client = await tx.user.upsert({
+          where: { email: ticket.client.email },
+          update: {},
+          create: {
+            name: ticket.client.name,
+            email: ticket.client.email,
+            password: await hashPassword(ticket.client.password),
+            role: "client" as UserRole,
+          },
+        });
+
+        const technical = await tx.user.upsert({
+          where: { email: ticket.technical.email },
+          update: {},
+          create: {
+            name: ticket.technical.name,
+            email: ticket.technical.email,
+            password: await hashPassword(ticket.technical.password),
+            role: "technical" as UserRole,
+          },
+        });
+
+        const services = [];
+
+        for (const service of ticket.service) {
+          const serviceUpsert = await tx.service.upsert({
+            where: { name: service.name },
+            update: {},
+            create: {
+              name: service.name,
+              amount: service.amount,
+            },
+          });
+
+          services.push(serviceUpsert);
+        }
+
+        const createdTicket = await tx.ticket.create({
+          data: {
+            title: ticket.ticket.title,
+            description: ticket.ticket.description,
+            status: ticket.ticket.status as TicketStatus,
+            clientId: client.id,
+            technicalId: technical.id,
+          },
+        });
+
+        for (const service of services) {
+          await tx.ticketService.create({
+            data: {
+              ticketId: createdTicket.id,
+              serviceId: service.id,
+              amount: service.amount,
+            },
+          });
+        }
+      }
+    },
+    {
+      maxWait: 10000,
+      timeout: 60000,
+    },
+  );
+}
+
+async function createHours(hours: number[]) {
+  await prisma.scale.createMany({
+    data: hours.map((hour) => ({ hour })),
+    skipDuplicates: true,
+  });
 }
 
 seed()
