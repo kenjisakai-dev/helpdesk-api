@@ -1,6 +1,6 @@
-import { hash } from "bcrypt";
-import { prisma } from "@/database/prisma";
 import { TicketStatus, UserRole } from "@prisma/client";
+import { hashPassword } from "@/utils/hash-password";
+import { prisma } from "@/database/prisma";
 
 async function seed() {
   const tickets = [
@@ -233,10 +233,6 @@ async function seed() {
   //   ],
   //   skipDuplicates: true,
   // });
-}
-
-async function hashPassword(password: string) {
-  return await hash(password, 8);
 }
 
 async function createTickets(tickets: any[]) {

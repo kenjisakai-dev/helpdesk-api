@@ -15,6 +15,10 @@ type TicketIndexDTO = {
   limit: number;
 };
 
+type TicketShowDTO = {
+  id: number;
+};
+
 type TicketUpdateDTO = {
   ticket_id: number;
   status: TicketStatus;
@@ -163,7 +167,7 @@ export class TicketService {
     };
   }
 
-  async show({ id }: { id: number }) {
+  async show({ id }: TicketShowDTO) {
     const ticket = await prisma.ticket.findUnique({
       where: {
         id,
