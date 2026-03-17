@@ -130,6 +130,23 @@ export class TechnicalService {
         status: true,
         createdAt: true,
         updatedAt: true,
+        userScales: {
+          select: {
+            id: true,
+            scaleId: true,
+            userId: true,
+            createdAt: true,
+            updatedAt: true,
+            scale: {
+              select: {
+                id: true,
+                hour: true,
+                createdAt: true,
+                updatedAt: true,
+              },
+            },
+          },
+        },
       },
       orderBy: { name: "asc" },
     });
