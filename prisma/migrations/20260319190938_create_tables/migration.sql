@@ -67,6 +67,27 @@ CREATE TABLE "user_profiles" (
     CONSTRAINT "user_profiles_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "scales" (
+    "id" SERIAL NOT NULL,
+    "hour" INTEGER NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "scales_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "user_scales" (
+    "id" SERIAL NOT NULL,
+    "user_id" INTEGER NOT NULL,
+    "scale_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "user_scales_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -75,6 +96,9 @@ CREATE UNIQUE INDEX "services_name_key" ON "services"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_profiles_user_id_key" ON "user_profiles"("user_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "scales_hour_key" ON "scales"("hour");
 
 -- AddForeignKey
 ALTER TABLE "tickets" ADD CONSTRAINT "tickets_client_id_fkey" FOREIGN KEY ("client_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -90,3 +114,9 @@ ALTER TABLE "ticket_services" ADD CONSTRAINT "ticket_services_ticket_id_fkey" FO
 
 -- AddForeignKey
 ALTER TABLE "user_profiles" ADD CONSTRAINT "user_profiles_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "user_scales" ADD CONSTRAINT "user_scales_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "user_scales" ADD CONSTRAINT "user_scales_scale_id_fkey" FOREIGN KEY ("scale_id") REFERENCES "scales"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
