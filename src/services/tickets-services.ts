@@ -159,11 +159,11 @@ export class TicketService {
     });
 
     const totalPages = Math.ceil(ticketsTotal / limit);
-    const totalTickets = ticketsTotal;
+    const totalItems = ticketsTotal;
 
     return {
-      tickets: ticketsWithTotalAmount,
-      pagination: { page, limit, totalPages, totalTickets },
+      data: ticketsWithTotalAmount,
+      pagination: { page, limit, totalPages, totalItems },
     };
   }
 
