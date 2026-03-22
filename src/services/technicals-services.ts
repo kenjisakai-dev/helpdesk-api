@@ -32,7 +32,7 @@ export class TechnicalService {
     });
 
     if (user) {
-      throw new Error("Email já cadastrado");
+      throw new AppError("Email já cadastrado");
     }
 
     const hashedPassword = await hashPassword(password);

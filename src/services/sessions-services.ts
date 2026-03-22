@@ -2,6 +2,7 @@ import { compare } from "bcrypt";
 import { sign } from "jsonwebtoken";
 import { prisma } from "@/database/prisma";
 import { authConfig } from "@/configs/auth-config";
+import { AppError } from "@/utils/app-error";
 
 type Login = {
   email: string;
@@ -15,13 +16,13 @@ export class SessionService {
     });
 
     if (!user) {
-      throw new Error("E-mail e/ou senha inválidos");
+      throw new AppError("E-mail e/ou senha inválidos", 401);
     }
 
     const comparePassword = await compare(password, user.password);
 
     if (!comparePassword) {
-      throw new Error("E-mail e/ou senha inválidos");
+      throw new AppError("E-mail e/ou senha inválidos", 401);
     }
 
     const { secret, expiresIn } = authConfig.jwt;
