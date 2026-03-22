@@ -1,7 +1,7 @@
+import { Router } from "express";
 import { ServicingController } from "@/controllers/servicings-controllers";
 import { verifyAuthorized } from "@/middlewares/verify-authorized";
 import { ServicingService } from "@/services/servicings-services";
-import { Router } from "express";
 
 const servicingRouter = Router();
 const servicingService = new ServicingService();

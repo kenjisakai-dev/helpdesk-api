@@ -22,6 +22,14 @@ export class UserController {
     return res.status(201).json();
   };
 
+  show = async (req: Request, res: Response) => {
+    const user_id = req.user?.user_id;
+
+    const user = await this.userService.show({ user_id });
+
+    return res.json(user);
+  };
+
   update = async (req: Request, res: Response) => {
     const bodySchema = z.object({
       name: z.string().trim().min(1, "Nome é obrigatório").optional(),

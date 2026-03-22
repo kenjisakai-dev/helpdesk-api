@@ -43,12 +43,15 @@ export class TicketService {
     });
 
     if (!service) {
-      throw new AppError("Serviço não encontrado");
+      throw new AppError("Serviço não encontrado", 404);
     }
 
     const technicals = await prisma.user.findMany({
       where: {
         role: "technical",
+      },
+      include: {
+        technicalTickets: true,
       },
     });
 
@@ -56,8 +59,16 @@ export class TicketService {
       throw new AppError("Nenhum técnico disponível");
     }
 
-    const randomIndex = Math.floor(Math.random() * technicals.length);
-    const technical = technicals[randomIndex];
+    const technicalsWithTicketCount = technicals.map((technical) => ({
+      ...technical,
+      ticketCount: technical.technicalTickets.length,
+    }));
+
+    const sortedTechnicals = technicalsWithTicketCount.sort(
+      (a, b) => a.ticketCount - b.ticketCount,
+    );
+
+    const technical = sortedTechnicals[0];
 
     await prisma.$transaction(async (tx) => {
       const ticket = await tx.ticket.create({
@@ -96,10 +107,13 @@ export class TicketService {
     }
 
     if (user?.role === "admin") {
-      filter = {};
+      filter = {
+        client: { status: true },
+      };
     } else if (user?.role === "technical") {
       filter = {
         technicalId: user.id,
+        client: { status: true },
       };
     } else {
       filter = {

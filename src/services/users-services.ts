@@ -9,6 +9,10 @@ type User = {
   password: string;
 };
 
+type ShowUser = {
+  user_id: number;
+};
+
 type UpdateUser = {
   user_id: number;
   name?: string;
@@ -40,6 +44,28 @@ export class UserService {
         password: hashedPassword,
       },
     });
+  }
+
+  async show({ user_id }: ShowUser) {
+    const user = await prisma.user.findUnique({
+      where: { id: user_id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        password: false,
+        createdAt: true,
+        updatedAt: true,
+        userProfile: true,
+      },
+    });
+
+    if (!user) {
+      throw new AppError("Usuário não encontrado", 404);
+    }
+
+    return user;
   }
 
   async update({ user_id, name, email }: UpdateUser) {

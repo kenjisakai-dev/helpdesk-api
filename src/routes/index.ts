@@ -8,6 +8,7 @@ import { scalesRoutes } from "@/routes/scales-routes";
 import { technicalsRoutes } from "@/routes/technicals-routes";
 import { clientsRoutes } from "@/routes/clients-routes";
 import { ensureAuthenticated } from "@/middlewares/ensure-authenticated";
+import { verifyUser } from "@/middlewares/verify-user";
 
 const routes = Router();
 
@@ -18,9 +19,9 @@ routes.get("/ping", (req, res) => {
 routes.use("/users", usersRoutes);
 routes.use("/sessions", sessionsRoutes);
 
-routes.use(ensureAuthenticated);
+routes.use(ensureAuthenticated, verifyUser("user", "user_id"));
 routes.use("/tickets", ticketsRouter);
-routes.use("/servicings", servicingRouter);
+routes.use("/services", servicingRouter);
 routes.use("/uploads", uploadsRoutes);
 routes.use("/scales", scalesRoutes);
 routes.use("/technicals", technicalsRoutes);
