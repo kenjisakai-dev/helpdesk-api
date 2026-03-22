@@ -2,8 +2,21 @@ import multer, { Options } from "multer";
 import crypto from "node:crypto";
 import path from "node:path";
 
-const TMP_FOLDER = path.resolve(__dirname, "..", "..", "tmp");
-const UPLOADS_FOLDER = path.resolve(__dirname, "..", "..", "uploads");
+const isTestEnvironment = process.env.NODE_ENV === "test";
+
+const TMP_FOLDER = path.resolve(
+  __dirname,
+  "..",
+  "..",
+  isTestEnvironment ? "tmp-test" : "tmp",
+);
+
+const UPLOADS_FOLDER = path.resolve(
+  __dirname,
+  "..",
+  "..",
+  isTestEnvironment ? "uploads-test" : "uploads",
+);
 
 const MAX_SIZE = 3; // 3MB
 const MAX_FILE_SIZE = 1024 * 1024 * MAX_SIZE;
