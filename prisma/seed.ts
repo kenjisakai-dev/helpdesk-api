@@ -1,28 +1,53 @@
-import { TicketStatus, UserRole } from "@prisma/client";
+import { TicketStatus, User, UserRole, Ticket } from "@prisma/client";
 import { hashPassword } from "@/utils/hash-password";
 import { prisma } from "@/database/prisma";
 
+type UserAdminDTO = Omit<User, "id" | "createdAt" | "updatedAt">;
+
 async function seed() {
+  const clients = [
+    {
+      name: "João Pereira",
+      email: "joao@email.com",
+      password: "123456",
+      role: "client",
+    },
+  ];
+
+  const technicals = [
+    {
+      name: "Carlos Silva",
+      email: "carlos@email.com",
+      password: "123456",
+      role: "technical",
+    },
+    {
+      name: "Ana Oliveira",
+      email: "ana@email.com",
+      password: "123456",
+      role: "technical",
+    },
+    {
+      name: "Camila Santos",
+      email: "camila@email.com",
+      password: "123456",
+      role: "technical",
+    },
+  ];
+
+  const services = [
+    { name: "Instalação de Rede", amount: 180 },
+    { name: "Recuperação de Dados", amount: 200 },
+    { name: "Manutenção de Hardware", amount: 150 },
+    { name: "Suporte de Software", amount: 80 },
+    { name: "Configuração de Dispositivo", amount: 120 },
+  ];
+
   const tickets = [
     {
-      client: {
-        name: "João Pereira",
-        email: "joao@email.com",
-        password: "123456",
-        role: "client",
-      },
-      technical: {
-        name: "Carlos Silva",
-        email: "carlos@email.com",
-        password: "123456",
-        role: "technical",
-      },
-      service: [
-        {
-          name: "Instalação de Rede",
-          amount: 180,
-        },
-      ],
+      client: clients[0],
+      technical: technicals[0],
+      service: [services[0]],
       ticket: {
         title: "Rede lenta",
         description: "Minha rede está muito lenta e instável.",
@@ -30,24 +55,9 @@ async function seed() {
       },
     },
     {
-      client: {
-        name: "João Pereira",
-        email: "joao@email.com",
-        password: "123456",
-        role: "client",
-      },
-      technical: {
-        name: "Carlos Silva",
-        email: "carlos@email.com",
-        password: "123456",
-        role: "technical",
-      },
-      service: [
-        {
-          name: "Recuperação de Dados",
-          amount: 200,
-        },
-      ],
+      client: clients[0],
+      technical: technicals[0],
+      service: [services[1]],
       ticket: {
         title: "Backup não está funcionando",
         description: "Meu backup não está funcionando corretamente.",
@@ -55,24 +65,9 @@ async function seed() {
       },
     },
     {
-      client: {
-        name: "João Pereira",
-        email: "joao@email.com",
-        password: "123456",
-        role: "client",
-      },
-      technical: {
-        name: "Carlos Silva",
-        email: "carlos@email.com",
-        password: "123456",
-        role: "technical",
-      },
-      service: [
-        {
-          name: "Manutenção de Hardware",
-          amount: 150,
-        },
-      ],
+      client: clients[0],
+      technical: technicals[0],
+      service: [services[2]],
       ticket: {
         title: "Computador não liga",
         description: "Meu computador parou de funcionar e não liga mais.",
@@ -80,28 +75,9 @@ async function seed() {
       },
     },
     {
-      client: {
-        name: "João Pereira",
-        email: "joao@email.com",
-        password: "123456",
-        role: "client",
-      },
-      technical: {
-        name: "Ana Oliveira",
-        email: "ana@email.com",
-        password: "123456",
-        role: "technical",
-      },
-      service: [
-        {
-          name: "Suporte de Software",
-          amount: 80,
-        },
-        {
-          name: "Configuração de Dispositivo",
-          amount: 120,
-        },
-      ],
+      client: clients[0],
+      technical: technicals[1],
+      service: [services[3], services[4]],
       ticket: {
         title: "Instalação de software de gestão",
         description:
@@ -110,37 +86,43 @@ async function seed() {
       },
     },
     {
-      client: {
-        name: "João Pereira",
-        email: "joao@email.com",
-        password: "123456",
-        role: "client",
-      },
-      technical: {
-        name: "Ana Oliveira",
-        email: "ana@email.com",
-        password: "123456",
-        role: "technical",
-      },
-      service: [
-        {
-          name: "Suporte de Software",
-          amount: 80,
-        },
-      ],
+      client: clients[0],
+      technical: technicals[1],
+      service: [services[3]],
       ticket: {
         title: "Meu fone não conecta no computador",
         description: "Preciso de ajuda para conectar meu fone ao computador.",
         status: "closed",
       },
     },
+    {
+      client: clients[0],
+      technical: technicals[2],
+      service: [services[4]],
+      ticket: {
+        title: "Computador não conecta a rede Wi-Fi",
+        description:
+          "Preciso de ajuda para conectar meu computador à rede Wi-Fi",
+        status: "closed",
+      },
+    },
   ];
+
   const hours = [
     7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
   ];
 
+  const userAdmin: UserAdminDTO = {
+    name: "Admin User",
+    email: "admin@email.com",
+    password: await hashPassword("123456"),
+    role: "admin" as UserRole,
+    status: true,
+  };
+
   await createTickets(tickets);
   await createHours(hours);
+  await createUserAdmin(userAdmin);
 }
 
 async function createTickets(tickets: any[]) {
@@ -216,6 +198,20 @@ async function createHours(hours: number[]) {
   await prisma.scale.createMany({
     data: hours.map((hour) => ({ hour })),
     skipDuplicates: true,
+  });
+}
+
+async function createUserAdmin(userAdmin: UserAdminDTO) {
+  await prisma.user.upsert({
+    where: { email: userAdmin.email },
+    create: {
+      name: userAdmin.name,
+      email: userAdmin.email,
+      password: userAdmin.password,
+      role: userAdmin.role,
+      status: userAdmin.status,
+    },
+    update: {},
   });
 }
 
