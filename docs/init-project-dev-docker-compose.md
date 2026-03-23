@@ -19,12 +19,20 @@ npm install
 
 ## 🔐 Configuração do ambiente
 
-Crie um arquivo `.env` na raiz do projeto com o seguinte conteúdo
+Ajuste o arquivo `.env` na raiz do projeto para conseguir gerar as tabelas
 
 ```
 DATABASE_URL="postgres://user123:user123@localhost:5432/helpdesk?schema=public"
 JWT_SECRET="key"
 PORT=3333
+```
+
+Ajuste também o `docker-compose.yml` para a API se conectar ao banco dentro da rede Docker
+
+```
+DATABASE_URL: postgres://user123:user123@postgres:5432/helpdesk?schema=public
+JWT_SECRET: key
+PORT: 3333
 ```
 
 ## 🐳 Gerar banco PostgreSQL e a API com Docker
@@ -41,6 +49,10 @@ Gere as tabelas no banco de dados usando as migrations
 
 ```bash
 npx prisma migrate deploy
+```
+
+```bash
+npx prisma generate
 ```
 
 ## ▶️ Executando o projeto
