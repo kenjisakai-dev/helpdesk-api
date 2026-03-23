@@ -55,6 +55,12 @@ npx prisma migrate deploy
 npx prisma generate
 ```
 
+Podemos gerar os dados seed no banco executando o comando
+
+```bash
+npx prisma db seed
+```
+
 ## ▶️ Executando o projeto
 
 ✅ Pronto!

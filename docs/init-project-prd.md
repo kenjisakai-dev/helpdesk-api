@@ -48,6 +48,12 @@ npx prisma migrate deploy
 npx prisma generate
 ```
 
+Podemos gerar os dados seed no banco executando o comando
+
+```bash
+npx prisma db seed
+```
+
 ## 🛠️ Compilação do projeto (TypeScript → JavaScript)
 
 O projeto utiliza **tsup** para compilar o código TypeScript para JavaScript
