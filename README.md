@@ -6,6 +6,11 @@ API REST responsável por gerenciar o fluxo de atendimento de um sistema de help
 
 https://helpdesk-api-1aza.onrender.com
 
+- Login cliente:  joao@email.com    123456
+- Login Técnico: carlos@email.com   123456
+- Login Técnico: ana@email.com      123456
+- Login Admin:   eduardo@email.com  123456
+
 ---
 
 ## 📚 Documentação dos endpoints
