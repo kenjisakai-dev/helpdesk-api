@@ -4,6 +4,8 @@ API REST responsável por gerenciar o fluxo de atendimento de um sistema de help
 
 🔗 **API em produção (pode estar desativada)**
 
+https://helpdesk-api-1aza.onrender.com
+
 ---
 
 ## 📚 Documentação dos endpoints
